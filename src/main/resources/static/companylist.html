@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!--    <meta charset="utf-8">-->
+<!--    <meta http-equiv="X-UA-Compatible" content="IE=edge">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>一起求职吧！</title>
+    <meta charset="utf-8">
+    <title>一起求职吧！</title>
+
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/yiqiqiuzhi/css/style.css">
+    <link href="https://cdn.bootcss.com/bootstrap-fileinput/4.4.7/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+<div id="wrap">
+    <div id="top_content">
+<!--        <div id="header">-->
+<!--            <div id="rightheader">-->
+<!--                <p>-->
+
+<!--                    <br />-->
+<!--                    <a href="javascript:;" @click="logout()">安全退出-->
+<!--                    </a>-->
+<!--                </p>-->
+<!--            </div>-->
+<!--            <div id="topheader">-->
+<!--                <h1 id="title">-->
+<!--&lt;!&ndash;                    <a href="/ems_vue/emplist.html">main</a>&ndash;&gt;-->
+<!--                </h1>-->
+<!--            </div>-->
+<!--            <div id="navigation">-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div id="header" class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">-->
+<!--        </div>-->
+        <div class="page-header">
+            <h1 href="#">
+                一起秋招吧！<span v-show="user!=null">{{user.username}}</span>!
+            </h1>
+        </div>
+        <div id="content" class="row">
+            <div class="col-md-4">
+                <ul class="nav sidebar-nav">
+<!--                    <li class="sidebar-brand">-->
+<!--                        <h1 href="#">-->
+<!--                            一起秋招吧！<span v-show="user!=null">{{user.username}}</span>-->
+<!--                        </h1>-->
+<!--                    </li>-->
+                    <tr class="fa fa-fw fa-list-alt">
+                        <button type="button" class="btn btn-primary btn-lg btn-block"  class="" @click="back()">回到主界面</button>
+                    </tr>
+                    <p class="fa fa-fw fa-list-alt">
+                        <button type="button" class="btn btn-primary btn-lg btn-block"   onclick="location='/yiqiqiuzhi/addConpany.html'">添加</button>
+                    </p>
+                    <p class="fa fa-fw fa-list-alt">
+                        <button type="button" class="btn btn-primary btn-lg btn-block"  onclick="location='/yiqiqiuzhi/collectlist.html'">个人收藏</button>
+                    </p>
+                    <p class="fa fa-fw fa-list-alt">
+                        <button type="button" class="btn btn-primary btn-lg btn-block"  onclick="location='/yiqiqiuzhi/friendlist.html'">好友列表</button>
+                    </p>
+                    <p class="fa fa-fw fa-list-alt">
+                        <button v-show="friendsAskList.length!=0" type="button" class="btn btn-primary btn-lg btn-block"  onclick="location='/yiqiqiuzhi/friendAsklist.html'">您有新的好友申请</button>
+                    </p>
+                    <li>
+                        <button href="javascript:;" class="btn btn-primary btn-lg btn-block" @click="logout()"><i class="fa fa-fw fa-list-alt"></i> 登出</button>
+                    </li>
+                </ul>
+            </div>
+            <tr id="page-content-wrapper" class="col-mo-8">
+                        <tr class="form-group">
+                            <label for="condionName" class="">公司名称</label>
+                            <tr class="">
+                                <input type="text" class="" id="condionName" v-model="condition.name" name="name"  >
+                            </tr>
+                        </tr>
+                        <tr class="">
+                            <label for="conditionSttion" class="">职位名称</label>
+                            <tr class="">
+                                <input type="text" class="" id="conditionSttion" v-model="condition.station" name="station"  >
+                            </tr>
+                        </tr>
+                        <tr class="">
+                            <button type="button" class="" @click="findAll()">查询</button>
+                        </tr>
+                        <table class="">
+                            <tr class="">
+                                <td>
+                                    序号
+                                </td>
+                                <td>
+                                    公司名称
+                                </td>
+                                <td>
+                                    职位
+                                </td>
+                                <td>
+                                    招聘地址
+                                </td>
+                                <td>
+                                    开始时间
+                                </td>
+                                <td>
+                                    结束时间
+                                </td>
+                                <td>
+                                    选项
+                                </td>
+                            </tr>
+                            <tr v-for="(company,index) in companies" :key="company.id" :class="index%2==0?'row1':'row2'">
+                                <td>
+                                    {{index+1}}
+                                </td>
+                                <td>
+                                    {{company.name}}
+                                </td>
+                                <td>
+                                    {{company.station}}
+                                </td>
+                                <td>
+                                    <a href="javascript:;" @click="tiaozhuanhref(company.href)">点击跳转</a>
+                                </td>
+                                <td>
+                                    {{company.startTime}}
+                                </td>
+                                <td>
+                                    {{company.endTime}}
+                                </td>
+                                <td>
+                                    <a href="javascript:;" @click="delCpy(company.id)">删除</a>&nbsp;
+                                    <a :href="'/yiqiqiuzhi/updateConpany.html?id='+company.id">修改</a>
+                                    <a v-show="panduan(company.id)" href="javascript:;" @click="addCollect(company.id)">收藏</a>
+                                    <a v-show="panduan(company.id) == false" href="javascript:;" @click="delCollect(company.id)">取消收藏</a>
+                                </td>
+                                <td>
+                                    <a :href="'/yiqiqiuzhi/webSocket.html?cpyId='+company.id">和小伙伴一起讨论吧</a>
+                                </td>
+                            </tr>
+
+                        </table>
+
+            </div>
+    </div>
+    <div id="footer">
+        <div id="footer_bg">
+            ABC@126.com
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script src="/yiqiqiuzhi/js/vue.js"></script>
+<script src="/yiqiqiuzhi/js/axios.min.js"></script>
+<script>
+    var app = new Vue({
+        el:"#wrap",
+        data:{
+            companies:[],
+            user:{},
+            collectCpy:[],
+            condition:{'name':'','station':''},
+            friendsAskList:[]
+        },
+        methods:{
+            back(){
+                this.condition={};
+                this.findAll();
+            },
+            panduan(id){
+                return this.collectCpy.indexOf(id) === -1;
+            },
+            findAll(){
+                console.log(this.condition)
+                var _this = this;
+                axios.post("http://127.0.0.1:8989/yiqiqiuzhi/company/conditionFind",_this.condition).then(res=>{
+                    _this.companies = res.data;
+                });
+                axios.get("http://127.0.0.1:8989/yiqiqiuzhi/collect/findAllCpyId").then(res=>{
+                    _this.collectCpy = res.data;
+                });
+            },
+            delCpy(id){
+                if(window.confirm("您确定要删除吗？")) {
+                    var _this = this;
+                    axios.get("http://127.0.0.1:8989/yiqiqiuzhi/company/delete?id=" + id).then(res => {
+                        if (res.data.state) {
+                            alert(res.data.msg + ",点击确定")
+                        } else {
+                            alert(res.data.msg);
+                        }
+                    });
+                    // location.reload();
+                }
+                location.reload();
+
+            },
+            addCollect(cpyId){
+                var _this = this;
+                axios.get("http://127.0.0.1:8989/yiqiqiuzhi/collect/save?cpyId=" + cpyId).then(res=>{
+                    if (res.data.state) {
+                        alert(res.data.msg + ",点击确定")
+                        _this.findAll();
+                    } else {
+                        alert(res.data.msg);
+                    }
+                })
+            },
+            delCollect(id){
+                if(window.confirm("您确定要取消收藏吗？")) {
+                    var _this = this;
+                    axios.get("http://127.0.0.1:8989/yiqiqiuzhi/collect/delete?cpyId=" + id).then(res => {
+                        if (res.data.state) {
+                            alert(res.data.msg + ",点击确定")
+                            _this.findAll();
+                        } else {
+                            alert(res.data.msg);
+                        }
+                    });
+                    // location.reload();
+                }
+            },
+            tiaozhuanhref(href){
+                window.open(href);
+            },
+            reload (){
+                location.reload();
+            },
+            logout(){
+                if(window.confirm("确定要退出吗？")){
+                    location.href="/yiqiqiuzhi/logout.do";
+                }
+            }
+
+        },
+        created(){
+            var _this = this;
+            axios.get("http://127.0.0.1:8989/yiqiqiuzhi/user/getUser").then(res=>{
+                _this.user = res.data;
+                _this.friendsAskList=res.data.friendsAskList;
+                _this.findAll();
+                console.log(_this.friendsAskList)
+            })
+        }
+    })
+</script>

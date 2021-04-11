@@ -1,0 +1,51 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.jiangnan.qiuzhao.Dao.CompanyDao">
+
+    <cache type="com.jiangnan.qiuzhao.config.RedisCache"/>
+
+    <!--findAll-->
+    <select id="findAll" resultType="Company">
+        select id,name,station,href,startTime,endTime from t_cpy
+    </select>
+    <!--ConditionFind-->
+    <select id="ConditionFind" parameterType="Condition" resultType="Company">
+        select id,name,station,href,startTime,endTime from t_cpy where 1=1
+        <if test="name!=null and name!=''">
+            and name like '%${name}%'
+        </if>
+        <if test="station!=null and station!=''">
+            and station like "%"#{station}"%"
+        </if>
+        order by ${'endTime'} ASC
+    </select>
+    <!--save-->
+    <insert id="save" parameterType="Company" useGeneratedKeys="true" keyProperty="id">
+        insert  into t_cpy values(#{id},#{name},#{station},#{href},#{startTime},#{endTime})
+        <selectKey keyProperty="id" order="AFTER" resultType="String">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    <!--delete-->
+    <delete id="delete" parameterType="String">
+        delete from t_cpy where id = #{id}
+    </delete>
+
+    <!--findOne-->
+    <select id="findOne" parameterType="String" resultType="Company">
+        select id,name,station,href,startTime,endTime from t_cpy
+        where id = #{id}
+    </select>
+    <!--update-->
+    <update id="update" parameterType="Company">
+        update t_cpy set
+        name =#{name},
+        station = #{station},
+        startTime = #{startTime},
+        endTime = #{endTime}
+        where
+        id = #{id}
+    </update>
+</mapper>

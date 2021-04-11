@@ -1,0 +1,42 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.jiangnan.qiuzhao.Dao.CollectDao">
+
+<!--    <cache type="com.baizhi.cache.RedisCache"/>-->
+    <cache-ref namespace="com.jiangnan.qiuzhao.Dao.CompanyDao"/>
+
+    <!--delete-->
+    <delete id="delete" parameterType="String">
+        delete from user_collect
+        where userId = #{userId} and cpyId = #{cpyId}
+    </delete>
+    <delete id="deleteAll" parameterType="String">
+        delete from user_collect
+        where  cpyId = #{cpyId}
+    </delete>
+
+    <!--save-->
+    <insert id="save" parameterType="Collect" useGeneratedKeys="true" >
+        insert  into user_collect values(#{userId},#{cpyId})
+    </insert>
+
+    <!--findByUserId-->
+    <select id="findByUserId" parameterType="String" resultType="Company">
+        select t_cpy.id,t_cpy.name,t_cpy.station,t_cpy.href,t_cpy.startTime,t_cpy.endTime
+        from t_cpy
+        inner join user_collect as collect
+        on t_cpy.id = collect.cpyId
+        where collect.userId = #{userId}
+    </select>
+    <select id="findUserphoneNumberByCpyId" parameterType="String" resultType="String">
+        select t_user.phoneNumber
+        from t_user
+        inner join user_collect as collect
+        on t_user.id = collect.userId
+        where collect.cpyId = #{cpyId}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,38 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="com.jiangnan.qiuzhao.Dao.UserDao">
+
+<!--    <cache type="com.jiangnan.qiuzhao.config.RedisCache"/>-->
+    <!--findAll-->
+    <select id="findAllfriend" resultType="User" parameterType="String">
+         select * from t_user
+            inner join(
+                select * from t_friend
+                where userOneState ='1' and userTwoState ='1')
+            as friend
+                on friend.userOneId = t_user.id or friend.userTwoId = t_user.id
+            where (friend.userOneId = #{id} or friend.userTwoId = #{id}) and t_user.id !=#{id}
+    </select>
+    <resultMap id="findAllfriend" type="UserFriend">
+    </resultMap>
+    <select id="findByUsername" resultType="User">
+        select id,username,password,phoneNumber from t_user
+        where username = #{username}
+    </select>
+    <select id="findById" resultType="User">
+        select id,username,password,phoneNumber from t_user
+        where id = #{id}
+    </select>
+    <!--save-->
+    <insert id="save" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        insert  into t_user values(#{id},#{username},#{password},#{phoneNumber})
+    </insert>
+
+    <select id="findAllPhoneNumber" resultType="String">
+        select phoneNumber from t_user
+    </select>
+
+
+</mapper>
